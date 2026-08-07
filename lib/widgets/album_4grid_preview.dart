@@ -1,63 +1,53 @@
-// Copyright (c) 2026
-// Add a 2x2 album preview widget for Aves
-
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
-/// 2x2 四宫格相册预览 Widget
-/// imageThumbProviders: 用于渲染缩略图的 ImageProvider 列表（优先推荐传入已缓存/缩略图 provider）
-class Album4GridPreview extends StatelessWidget {
-  final List<ImageProvider> imageThumbProviders;
+/// Simple 2x2 album preview in "fast-browse" style:
+/// - No rounded corners, no colored borders
+/// - Square tile, 2x2 images, images use BoxFit.cover
+/// - Optional small play icon overlay for video thumbnails
+class Album4GridPreviewSimple extends StatelessWidget {
+  final List<ImageProvider> thumbnails; // up to 4 preferred; if more, take first 4
   final VoidCallback? onTap;
-  final double spacing;
-  final double borderRadius;
-  final Color placeholderColor;
+  final double gap; // small gap between images, default 1.0 for compact look
+  final bool showPlayIconForVideo; // if true, caller must pass VideoIndicator items some other way
 
-  const Album4GridPreview({
+  const Album4GridPreviewSimple({
     Key? key,
-    required this.imageThumbProviders,
+    required this.thumbnails,
     this.onTap,
-    this.spacing = 2.0,
-    this.borderRadius = 4.0,
-    this.placeholderColor = const Color(0xFFE0E0E0),
+    this.gap = 1.0,
+    this.showPlayIconForVideo = true,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // 取最多四张 provider
-    final thumbs = imageThumbProviders.take(4).toList();
-
+    final List<ImageProvider> imgs = List<ImageProvider>.from(thumbnails);
+    // only take up to 4; simpler: if fewer than 4, show what we have (no duplication)
+    final int itemCount = 4;
     return GestureDetector(
       onTap: onTap,
       child: AspectRatio(
-        aspectRatio: 1, // 保持正方形
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(borderRadius),
+        aspectRatio: 1,
+        child: ClipRect(
           child: Container(
-            color: Colors.black12,
+            color: Colors.black, // background between thumbnails (fast-browse like)
             child: GridView.builder(
               physics: const NeverScrollableScrollPhysics(),
               padding: EdgeInsets.zero,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                mainAxisSpacing: spacing,
-                crossAxisSpacing: spacing,
+                mainAxisSpacing: gap,
+                crossAxisSpacing: gap,
               ),
-              itemCount: 4,
+              itemCount: itemCount,
               itemBuilder: (context, index) {
-                if (index < thumbs.length) {
-                  final provider = thumbs[index];
-                  return DecoratedBox(
-                    decoration: BoxDecoration(color: Colors.black12),
-                    child: Image(
-                      image: provider,
-                      fit: BoxFit.cover,
-                      errorBuilder: (c, e, s) => Container(color: placeholderColor),
-                    ),
+                if (index < imgs.length) {
+                  return _ThumbCell(
+                    image: imgs[index],
+                    showPlayIcon: false, // caller can change logic to mark videos
                   );
                 } else {
-                  // 占位
-                  return Container(color: placeholderColor);
+                  // empty cell: keep it minimal (black background)
+                  return const SizedBox.shrink();
                 }
               },
             ),
@@ -68,14 +58,43 @@ class Album4GridPreview extends StatelessWidget {
   }
 }
 
-/// 透明占位图（1x1 PNG bytes），用于占位场景
-final Uint8List kTransparentImage = Uint8List.fromList(<int>[
-  0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
-  0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52,
-  0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
-  0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4,
-  0x89, 0x00, 0x00, 0x00, 0x0A, 0x49, 0x44, 0x41,
-  0x54, 0x78, 0x9C, 0x63, 0x60, 0x00, 0x00, 0x00,
-  0x02, 0x00, 0x01, 0xE2, 0x21, 0xBC, 0x33, 0x00,
-  0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE,
-]);
+class _ThumbCell extends StatelessWidget {
+  final ImageProvider image;
+  final bool showPlayIcon;
+
+  const _ThumbCell({
+    Key? key,
+    required this.image,
+    this.showPlayIcon = false,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // Use Container with DecorationImage to ensure cover behavior and minimal layout
+    return Container(
+      color: Colors.black,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Use DecorationImage to avoid extra widget nesting
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: image,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          if (showPlayIcon)
+            Center(
+              child: Icon(
+                Icons.play_circle_filled,
+                color: Colors.white70,
+                size: 36,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
