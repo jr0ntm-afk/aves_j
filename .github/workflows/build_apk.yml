@@ -1,4 +1,4 @@
-name: Build Debug APK
+name: Build Debug APK (play)
 
 on:
   push:
@@ -36,8 +36,7 @@ jobs:
           unzip -q cmdline.zip
           rm cmdline.zip
 
-          # The zip usually extracts a folder named 'cmdline-tools'
-          # Move it to 'latest' so the layout becomes cmdline-tools/latest/bin/...
+          # The zip usually extracts a folder named 'cmdline-tools' or 'tools'
           if [ -d "cmdline-tools" ]; then
             mv cmdline-tools latest
           elif [ -d "tools" ]; then
@@ -54,23 +53,23 @@ jobs:
           yes | sdkmanager --sdk_root="$ANDROID_SDK_ROOT" --licenses || true
           sdkmanager --sdk_root="$ANDROID_SDK_ROOT" "platform-tools" "platforms;android-33" "build-tools;33.0.0"
 
-          # Also persist platform-tools and cmdline-tools to subsequent steps by appending to GITHUB_PATH
+          # Persist paths to subsequent steps
           echo "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin" >> $GITHUB_PATH
           echo "$ANDROID_SDK_ROOT/platform-tools" >> $GITHUB_PATH
 
       - name: Set up Flutter (pin explicit version)
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.44.5'
+          flutter-version: '3.44.5'  # match project flutter: 3.44.5
 
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build debug APK
-        run: flutter build apk --debug --no-shrink
+      - name: Build debug APK (play)
+        run: flutter build apk --debug --no-shrink --flavor play -t lib/main_play.dart
 
-      - name: Upload APK artifact
+      - name: Upload APK artifact (play)
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug-apk
-          path: build/app/outputs/**/app-debug.apk
+          name: app-debug-apk-play
+          path: build/app/outputs/**/app-*-debug.apk
