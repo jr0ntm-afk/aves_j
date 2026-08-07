@@ -40,14 +40,23 @@ class Album4GridPreviewSimple extends StatelessWidget {
               ),
               itemCount: itemCount,
               itemBuilder: (context, index) {
+                // ensure every index has a visible tile (strict 2x2)
+                final key = Key('album_tile_$index');
                 if (index < imgs.length) {
-                  return _ThumbCell(
-                    image: imgs[index],
-                    showPlayIcon: false, // caller can change logic to mark videos
+                  return Container(
+                    key: key,
+                    color: Colors.black,
+                    child: _ThumbCell(
+                      image: imgs[index],
+                      showPlayIcon: false,
+                    ),
                   );
                 } else {
-                  // empty cell: keep it minimal (black background)
-                  return const SizedBox.shrink();
+                  // empty cell: explicit visible placeholder to keep the 2x2 appearance
+                  return Container(
+                    key: key,
+                    color: Colors.black,
+                  );
                 }
               },
             ),
