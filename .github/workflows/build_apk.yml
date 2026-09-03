@@ -1,4 +1,4 @@
-name: Build Debug APK (play) + tests (with cache)
+name: Build Release APK (split-per-abi) + tests (with cache)
 
 on:
   push:
@@ -91,11 +91,11 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build debug APK (play)
-        run: flutter build apk --debug --no-shrink --flavor play -t lib/main_play.dart
+      - name: Build release APK (split-per-abi)
+        run: flutter build apk --release --split-per-abi --flavor play -t lib/main_play.dart
 
-      - name: Upload APK artifact (play)
+      - name: Upload release APK artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug-apk-play
-          path: build/app/outputs/**/app-*-debug.apk
+          name: app-release-apks
+          path: build/app/outputs/**/app-*-release-*.apk
