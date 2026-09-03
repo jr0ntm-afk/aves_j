@@ -22,6 +22,7 @@ import 'package:aves/utils/android_file_utils.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/identity/aves_filter_chip.dart';
 import 'package:aves/widgets/common/thumbnail/image.dart';
+import 'package:aves/widgets/album_4grid_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -182,11 +183,26 @@ class CoveredFilterChip<T extends CollectionFilter> extends StatelessWidget {
                     );
                   },
                 )
-              : ThumbnailImage(
-                  entry: entry,
-                  extent: thumbnailExtent,
-                  devicePixelRatio: MediaQuery.devicePixelRatioOf(context),
-                ),
+              : (() {
+                  // for stored albums with multiple entries, show 2x2 thumbnail preview
+                  if (_filter is StoredAlbumFilter) {
+                    final albumEntries = source.visibleEntries.where((e) => _filter.test(e)).take(4).toList();
+                    if (albumEntries.length > 1) {
+                      final providers = albumEntries.map((e) => e.bestCachedThumbnail).toList();
+                      return Album4GridPreviewSimple(
+                        thumbnails: providers,
+                        onTap: () => onTap?.call(_filter),
+                        gap: 1.0,
+                      );
+                    }
+                  }
+
+                  return ThumbnailImage(
+                    entry: entry,
+                    extent: thumbnailExtent,
+                    devicePixelRatio: MediaQuery.devicePixelRatioOf(context),
+                  );
+                })(),
         ),
       ),
       banner: banner,
