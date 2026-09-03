@@ -22,6 +22,7 @@ import 'package:aves/utils/android_file_utils.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/identity/aves_filter_chip.dart';
 import 'package:aves/widgets/common/thumbnail/image.dart';
+import 'package:aves/model/entry/extensions/images.dart';
 import 'package:aves/widgets/album_4grid_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -188,7 +189,7 @@ class CoveredFilterChip<T extends CollectionFilter> extends StatelessWidget {
                   if (_filter is StoredAlbumFilter) {
                     final albumEntries = source.visibleEntries.where((e) => _filter.test(e)).take(4).toList();
                     if (albumEntries.length > 1) {
-                      final providers = albumEntries.map((e) => e.bestCachedThumbnail).toList();
+                      final providers = albumEntries.map((e) => e.bestCachedThumbnail as ImageProvider).toList();
                       return Album4GridPreviewSimple(
                         thumbnails: providers,
                         onTap: () => onTap?.call(_filter),
