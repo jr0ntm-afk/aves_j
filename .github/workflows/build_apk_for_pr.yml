@@ -6,7 +6,7 @@ on:
 
 jobs:
   build-apk:
-    name: Build debug APK
+    name: Build release APK
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -36,14 +36,14 @@ jobs:
       - name: Install Flutter dependencies
         run: flutter pub get
 
-      - name: Build APK (debug)
-        run: flutter build apk --debug --no-shrink -v
+      - name: Build APK (release)
+        run: flutter build apk --release --no-shrink -v
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug.apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          name: app-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
 
       - name: Comment on PR with workflow run link
         uses: actions/github-script@v6
@@ -56,7 +56,7 @@ jobs:
               return;
             }
             const runUrl = `${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`;
-            const body = `Built debug APK for this PR. Download the artifact from the Actions run: ${runUrl}\n\nArtifacts are listed under the "Artifacts" section of that run.`;
+            const body = `Built release APK for this PR. Download the artifact from the Actions run: ${runUrl}\n\nArtifacts are listed under the "Artifacts" section of that run.`;
             await github.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
