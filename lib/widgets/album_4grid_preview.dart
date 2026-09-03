@@ -31,6 +31,8 @@ class Album4GridPreviewSimple extends StatelessWidget {
           child: Container(
             color: Colors.black, // background between thumbnails (fast-browse like)
             child: GridView.builder(
+              primary: false,
+              shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               padding: EdgeInsets.zero,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
