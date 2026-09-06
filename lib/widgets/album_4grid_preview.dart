@@ -31,34 +31,36 @@ class Album4GridPreviewSimple extends StatelessWidget {
           child: Container(
             color: Colors.black, // background between thumbnails (fast-browse like)
             child: GridView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.zero,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: gap,
-                crossAxisSpacing: gap,
-              ),
-              itemCount: itemCount,
-              itemBuilder: (context, index) {
-                // ensure every index has a visible tile (strict 2x2)
-                final key = Key('album_tile_$index');
-                if (index < imgs.length) {
-                  return Container(
-                    key: key,
-                    color: Colors.black,
-                    child: _ThumbCell(
-                      image: imgs[index],
-                      showPlayIcon: false,
-                    ),
-                  );
-                } else {
-                  // empty cell: explicit visible placeholder to keep the 2x2 appearance
-                  return Container(
-                    key: key,
-                    color: Colors.black,
-                  );
-                }
-              },
+               primary: false,
+               shrinkWrap: true,
+               physics: const NeverScrollableScrollPhysics(),
+               padding: EdgeInsets.zero,
+               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                 crossAxisCount: 2,
+                 mainAxisSpacing: gap,
+                 crossAxisSpacing: gap,
+               ),
+               itemCount: itemCount,
+               itemBuilder: (context, index) {
+                 // ensure every index has a visible tile (strict 2x2)
+                 final key = Key('album_tile_$index');
+                 if (index < imgs.length) {
+                   return Container(
+                     key: key,
+                     color: Colors.black,
+                     child: _ThumbCell(
+                       image: imgs[index],
+                       showPlayIcon: false,
+                     ),
+                   );
+                 } else {
+                   // empty cell: explicit visible placeholder to keep the 2x2 appearance
+                   return Container(
+                     key: key,
+                     color: Colors.black,
+                   );
+                 }
+               },
             ),
           ),
         ),
