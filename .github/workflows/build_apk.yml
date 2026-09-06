@@ -91,8 +91,8 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build libre release APK (arm64 only)
-        run: flutter build apk --release --target-platform android-arm64 --flavor libre -t lib/main_libre.dart
+      - name: Build libre release APK (split-per-ABI)
+        run: flutter build apk --release --flavor libre -t lib/main_libre.dart --split-per-abi
 
       - name: Package arm64 libre APK and upload
         run: |
