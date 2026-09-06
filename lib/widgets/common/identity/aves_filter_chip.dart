@@ -310,21 +310,27 @@ class _AvesFilterChipState extends State<AvesFilterChip> {
       if (decoration != null) {
         content = Align(
           alignment: Alignment.bottomCenter,
-          child: ClipRRect(
-            borderRadius: decoration.textBorderRadius,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: padding * 2, vertical: AvesFilterChip.decoratedContentVerticalPadding),
-              color: chipBackground,
-              child: content,
-            ),
-          ),
-        );
-      } else {
-        content = Padding(
-          padding: EdgeInsets.symmetric(horizontal: padding * 2),
-          child: content,
-        );
-      }
+                child: (decoration.showOutline ?? true)
+                    ? ClipRRect(
+                        borderRadius: decoration.textBorderRadius,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: padding * 2, vertical: AvesFilterChip.decoratedContentVerticalPadding),
+                          color: chipBackground,
+                          child: content,
+                        ),
+                      )
+                    : Container(
+                        padding: EdgeInsets.symmetric(horizontal: padding * 2, vertical: AvesFilterChip.decoratedContentVerticalPadding),
+                        color: chipBackground,
+                        child: content,
+                      ),
+              );
+            } else {
+              content = Padding(
+                padding: EdgeInsets.symmetric(horizontal: padding * 2),
+                child: content,
+              );
+            }
     }
 
     final borderRadius = decoration?.chipBorderRadius ?? const BorderRadius.all(Radius.circular(AvesFilterChip.defaultRadius));
@@ -348,10 +354,10 @@ class _AvesFilterChipState extends State<AvesFilterChip> {
         fit: StackFit.passthrough,
         children: [
           if (decoration != null)
-            ClipRRect(
+                      (decoration.showOutline ?? true) ? ClipRRect(
               borderRadius: decoration.chipBorderRadius,
               child: decoration.widget,
-            ),
+                      ) : decoration.widget,
           Material(
             color: decoration != null ? Colors.transparent : chipBackground,
             shape: RoundedRectangleBorder(
