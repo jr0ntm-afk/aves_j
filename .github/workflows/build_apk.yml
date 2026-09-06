@@ -3,10 +3,10 @@ name: Build Debug APK (play) + tests (with cache)
 on:
   push:
     branches:
-      - album-4grid-preview
+      - album-4grid
   pull_request:
     branches:
-      - album-4grid-preview
+      - album-4grid
   workflow_dispatch: {}
 
 jobs:
@@ -91,11 +91,24 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build debug APK (play)
-        run: flutter build apk --debug --no-shrink --flavor play -t lib/main_play.dart
+      - name: Build libre release APK (arm64 only)
+        run: flutter build apk --release --target-platform android-arm64 --flavor libre -t lib/main_libre.dart
 
-      - name: Upload APK artifact (play)
+      - name: Package arm64 libre APK and upload
+        run: |
+          mkdir -p release_artifacts
+          apk_path=$(find build -type f -name "*libre*release*.apk" | head -n 1 || true)
+          if [ -z "$apk_path" ]; then
+            apk_path=$(find build -type f -name "*app-release.apk" | head -n 1 || true)
+          fi
+          if [ -z "$apk_path" ]; then
+            echo "No APK found"; exit 1
+          fi
+          echo "Found APK: $apk_path"
+          cp "$apk_path" release_artifacts/app-libre-arm64-release-unsigned.apk
+        
+      - name: Upload APK artifact (libre-arm64)
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug-apk-play
-          path: build/app/outputs/**/app-*-debug.apk
+          name: app-libre-arm64-release-unsigned
+          path: release_artifacts/app-libre-arm64-release-unsigned.apk
