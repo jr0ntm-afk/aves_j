@@ -205,14 +205,8 @@ class CoveredFilterChip<T extends CollectionFilter> extends StatelessWidget {
                   );
                 })(),
         ),
-        // hide outline when showing a 2x2 album preview to get a frameless look
-        showOutline: (() {
-          if (_filter is StoredAlbumFilter) {
-            final albumEntries = source.visibleEntries.where((e) => _filter.test(e)).take(4).toList();
-            return !(albumEntries.length > 1);
-          }
-          return true;
-        })(),
+        // apply frameless style for albums (stored albums and album groups)
+        showOutline: !(_filter is StoredAlbumFilter || _filter is AlbumGroupFilter),
       ),
       banner: banner,
       details: showText ? _buildDetails(context, source, _filter) : null,

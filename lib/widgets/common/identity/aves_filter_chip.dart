@@ -333,7 +333,9 @@ class _AvesFilterChipState extends State<AvesFilterChip> {
             }
     }
 
-    final borderRadius = decoration?.chipBorderRadius ?? const BorderRadius.all(Radius.circular(AvesFilterChip.defaultRadius));
+    final BorderRadius borderRadius = (decoration?.showOutline ?? true)
+        ? (decoration?.chipBorderRadius ?? const BorderRadius.all(Radius.circular(AvesFilterChip.defaultRadius)))
+        : BorderRadius.zero;
     final banner = widget.banner;
     Widget chip = Container(
       constraints: BoxConstraints(
