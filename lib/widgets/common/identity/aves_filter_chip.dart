@@ -32,10 +32,12 @@ enum HeroType { always, onTap, never }
 class AvesFilterDecoration {
   final Radius radius;
   final Widget widget;
+  final bool showOutline;
 
   const AvesFilterDecoration({
     required this.radius,
     required this.widget,
+    this.showOutline = true,
   });
 
   BorderRadius get textBorderRadius => BorderRadius.vertical(bottom: radius);
@@ -373,12 +375,14 @@ class _AvesFilterChipState extends State<AvesFilterChip> {
                   }
                   return DecoratedBox(
                     decoration: BoxDecoration(
-                      border: Border.fromBorderSide(
-                        BorderSide(
-                          color: widget.useFilterColor ? _outlineColor : context.select<AvesColorsData, Color>((v) => v.neutral),
-                          width: AvesFilterChip.outlineWidth,
-                        ),
-                      ),
+                      border: (widget.decoration?.showOutline ?? true)
+                          ? Border.fromBorderSide(
+                              BorderSide(
+                                color: widget.useFilterColor ? _outlineColor : context.select<AvesColorsData, Color>((v) => v.neutral),
+                                width: AvesFilterChip.outlineWidth,
+                              ),
+                            )
+                          : null,
                       borderRadius: borderRadius,
                     ),
                     position: DecorationPosition.foreground,
